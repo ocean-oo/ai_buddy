@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'dart:io';
-
 import 'package:ai_buddy/core/config/type_of_bot.dart';
 import 'package:ai_buddy/core/config/type_of_message.dart';
 import 'package:ai_buddy/core/logger/logger.dart';
@@ -96,30 +96,32 @@ class MessageListNotifier extends StateNotifier<ChatBot> {
 
     final StringBuffer fullResponseText = StringBuffer();
 
-    responseStream.listen((response) async {
-      if (response.content!.parts!.isNotEmpty) {
-        fullResponseText.write(response.content!.parts!.first.text);
-        final int messageIndex =
-            state.messagesList.indexWhere((msg) => msg['id'] == modelMessageId);
-        if (messageIndex != -1) {
-          final newMessagesList =
-              List<Map<String, dynamic>>.from(state.messagesList);
-          newMessagesList[messageIndex]['text'] = fullResponseText.toString();
-          final newState = ChatBot(
-            id: state.id,
-            title: state.title,
-            typeOfBot: state.typeOfBot,
-            messagesList: newMessagesList,
-            attachmentPath: state.attachmentPath,
-            embeddings: state.embeddings,
-          );
-          await updateChatBot(newState);
+    responseStream.listen(
+      (response) async {
+        if (response.content!.parts!.isNotEmpty) {
+          fullResponseText.write(response.content!.parts!.first.text);
+          final int messageIndex = state.messagesList
+              .indexWhere((msg) => msg['id'] == modelMessageId);
+          if (messageIndex != -1) {
+            final newMessagesList =
+                List<Map<String, dynamic>>.from(state.messagesList);
+            newMessagesList[messageIndex]['text'] = fullResponseText.toString();
+            final newState = ChatBot(
+              id: state.id,
+              title: state.title,
+              typeOfBot: state.typeOfBot,
+              messagesList: newMessagesList,
+              attachmentPath: state.attachmentPath,
+              embeddings: state.embeddings,
+            );
+            await updateChatBot(newState);
+          }
         }
-      }
-      // ignore: inference_failure_on_untyped_parameter
-    }).onError((error) {
-      logError('Error in response stream $error');
-    });
+      },
+      onError: (error) {
+        logError('Error in response stream $error');
+      },
+    );
   }
 
   Future<void> updateChatBot(ChatBot newChatBot) async {

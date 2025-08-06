@@ -23,6 +23,7 @@ class APIKeyBottomSheet extends StatefulWidget {
 class _APIKeyBottomSheetState extends State<APIKeyBottomSheet> {
   bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -67,10 +68,8 @@ class _APIKeyBottomSheetState extends State<APIKeyBottomSheet> {
                   });
 
                   if (widget.isCalledFromHomePage) {
-                    // ignore: use_build_context_synchronously
                     context.pop();
                   } else {
-                    // ignore: use_build_context_synchronously
                     AppRoute.home.go(context);
                   }
                 },
